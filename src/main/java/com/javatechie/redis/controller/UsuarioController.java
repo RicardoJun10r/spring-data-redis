@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.javatechie.redis.entity.Post;
 import com.javatechie.redis.entity.Usuario;
-import com.javatechie.redis.respository.PostDao;
 import com.javatechie.redis.respository.UsuarioDao;
 
 @RestController
@@ -25,8 +24,8 @@ public class UsuarioController {
     @Autowired
     private UsuarioDao usuarioDao;
 
-    @Autowired
-    private PostDao postDao;
+    // @Autowired
+    // private PostDao postDao;
 
     @PostMapping
     public void save(@RequestBody Usuario usuario) {
@@ -70,7 +69,7 @@ public class UsuarioController {
 
     @PostMapping("/post/{email}/{post}")
     public Boolean comentar(@PathVariable String email, @PathVariable String post, @RequestBody String respostas) {
-        return usuarioDao.comentar(email, post, respostas);
+        return this.usuarioDao.comentar(email, post, respostas);
     }
 
     @GetMapping("/amigos/{email}")
@@ -88,9 +87,9 @@ public class UsuarioController {
         usuarioDao.removerAmigo(email, amigo);
     }
 
-    @GetMapping("/post")
-    public List<Post> listarTodosPosts(){
-        return this.postDao.listarPosts();
-    }
+    // @GetMapping("/post")
+    // public List<Post> listarTodosPosts(){
+    //     return this.postDao.listarPosts();
+    // }
 
 }

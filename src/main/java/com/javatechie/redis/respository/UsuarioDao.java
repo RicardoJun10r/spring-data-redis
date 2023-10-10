@@ -3,6 +3,7 @@ package com.javatechie.redis.respository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,6 @@ import com.javatechie.redis.entity.Usuario;
 public class UsuarioDao {
     
     public static final String HASH_KEY = "usuario";
-
-    @Autowired
-    private PostDao postDao;
 
     @Autowired
     private RedisTemplate template;
@@ -52,12 +50,9 @@ public class UsuarioDao {
     public void adicionarPost(String email, Post post) {
         Usuario usuario = buscarUsuario(email);
         if(usuario != null){
-            post.setId(generatePostId(email));
-            post.setUsuario(usuario);
-            post.setEhPrivado(false);
-            List<String> mensagens = new ArrayList<>();
-            post.setRespostas(mensagens);
-            this.postDao.criarPost(post);
+            post.setId(UUID.randomUUID().toString());
+            if(post.getEhPrivado() == null) post.setEhPrivado(false);
+            post.setRespostas("");
             usuario.getPosts().add(post);
             atualizarUsuario(usuario);
         }
@@ -69,7 +64,7 @@ public class UsuarioDao {
 
     public void deletarPost(String email, String idPost) {
         Usuario usuario = buscarUsuario(email);
-        if(this.postDao.deletarPost(idPost)){
+        if(usuario != null){
             usuario.getPosts().removeIf(post -> post.getId().equals(idPost));
             atualizarUsuario(usuario);
         }
@@ -94,7 +89,14 @@ public class UsuarioDao {
     public Boolean comentar(String email, String post, String comentario){
         Usuario usuario = buscarUsuario(email);
         if(usuario != null){
-            this.postDao.comentar(comentario, post);
+            usuario.getPosts().forEach(p -> {
+                if(p.getId().equals(post)){
+                    String aux = p.getRespostas();
+                    aux += "\n" + comentario;
+                    p.setRespostas(aux);
+                }
+            });
+            atualizarUsuario(usuario);
             return true;
         }
         return false;

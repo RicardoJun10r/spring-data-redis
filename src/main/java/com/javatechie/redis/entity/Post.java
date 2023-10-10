@@ -3,10 +3,7 @@ package com.javatechie.redis.entity;
 import java.io.Serializable;
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,13 +19,10 @@ import lombok.Setter;
 @RedisHash("posts")
 public class Post implements Serializable {
 
-    @Id
+    private static final long serialVersionUID = -6550087036434141495L;
     private String id;
-    
-    @JsonIgnore
-    private Usuario usuario;
     private String mensagem;
-    private List<String> respostas;
+    private String respostas;
     private Boolean ehPrivado;
 
 }
